@@ -1,0 +1,21 @@
+name: Monokai Pro
+author: StarKayC
+repo: https://github.com/starkayc/cider3-monokai
+version: 0.1.0
+stylesheets:
+  - file: classic.css
+    name: Monokai Classic
+  - file: pro.css
+    name: Monokai Pro
+  - file: machine.css
+    name: Monokai Pro (Filter Machine)
+  - file: octagon.css
+    name: Monokai Pro (Filter Octagon)
+  - file: ristretto.css
+    name: Monokai Pro (Filter Ristretto)
+  - file: spectrum.css
+    name: Monokai Pro (Filter Spectrum)
+  - file: light.css
+    name: Monokai Pro Light
+  - file: light-sun.css
+    name: Monokai Pro Light (Filter Sun)
