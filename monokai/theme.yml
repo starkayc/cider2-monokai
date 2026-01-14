@@ -1,6 +1,6 @@
 name: Monokai Pro
 author: StarKayC
-repo: https://github.com/starkayc/cider3-monokai
+repo: https://github.com/starkayc/cider2-monokai
 version: 0.1.0
 stylesheets:
   - file: classic.css
