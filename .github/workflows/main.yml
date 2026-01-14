@@ -1,0 +1,85 @@
+name: Release Theme
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'monokai/**'
+      - '.github/workflows/main.yml'
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Extract version from theme.yml
+        id: get_version
+        run: |
+          VERSION=$(grep '^version:' monokai/theme.yml | awk '{print $2}' | tr -d '"')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
+      
+      - name: Check if version already exists
+        id: check_version
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          TAG="v$VERSION"
+          
+          # Check if tag/release exists using GitHub API
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG")
+          
+          if [ "$RESPONSE" = "200" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Version $TAG already exists as a release. Exiting."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Version $TAG is new. Proceeding with release."
+          fi
+      
+      - name: Exit if version exists
+        if: steps.check_version.outputs.exists == 'true'
+        run: |
+          echo "Release already exists for this version. Exiting workflow."
+          exit 0
+      
+      - name: Create zip archive
+        if: steps.check_version.outputs.exists == 'false'
+        run: |
+          cd monokai
+          zip -r ../monokai-v${{ steps.get_version.outputs.version }}.zip .
+          cd ..
+          echo "Created monokai-v${{ steps.get_version.outputs.version }}.zip"
+      
+      - name: Create GitHub Release
+        if: steps.check_version.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: Monokai Pro v${{ steps.get_version.outputs.version }}
+          body: |
+            ## Monokai Pro Theme v${{ steps.get_version.outputs.version }}
+            
+            This release contains the Monokai Pro theme for Cider.
+            
+            ### Installation
+            1. Download `monokai-v${{ steps.get_version.outputs.version }}.zip`
+            2. Extract the zip file
+            3. Place the `monokai` folder in your Cider themes directory:
+               - Menu → Settings → Extensions → Themes → 3 Dots → Open AppData Folder → Themes
+            4. Enable the theme in Settings → Extensions → Themes
+          files: |
+            monokai-v${{ steps.get_version.outputs.version }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
