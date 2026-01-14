@@ -55,9 +55,7 @@ jobs:
       - name: Create zip archive
         if: steps.check_version.outputs.exists == 'false'
         run: |
-          cd monokai
-          zip -r ../monokai-v${{ steps.get_version.outputs.version }}.zip .
-          cd ..
+          zip -r monokai-v${{ steps.get_version.outputs.version }}.zip monokai
           echo "Created monokai-v${{ steps.get_version.outputs.version }}.zip"
       
       - name: Create GitHub Release
