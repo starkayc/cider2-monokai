@@ -35,8 +35,6 @@ jobs:
             awk 'found { print } /\/\* Globals \*\// { found=1; print }' "$TMP_FILE"
           } > monokai/base.css
 
-          echo "}" >> monokai/base.css
-
       - name: Format base.css with Prettier
         run: |
           npx --yes prettier@3 --write monokai/base.css
