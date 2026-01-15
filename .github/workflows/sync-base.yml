@@ -3,7 +3,7 @@ name: Sync Base Theme
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 1 * * *"
+    - cron: "15 */6 * * *"
 
 jobs:
   sync-base:
