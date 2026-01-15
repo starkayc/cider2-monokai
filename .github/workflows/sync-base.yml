@@ -38,7 +38,7 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
 
-            BRANCH="chore/sync-base-$(date +%Y%m%d)"
+            BRANCH="chore/sync-base-${{ github.run_id }}"
             git checkout -b "$BRANCH"
             git add monokai/base.css
             git commit -m "chore: sync base.css from catppuccin"
@@ -48,7 +48,8 @@ jobs:
               --title "chore: sync base.css from catppuccin" \
               --body "Automated update of monokai/base.css from the catppuccin source." \
               --base "${{ github.ref_name }}" \
-              --head "$BRANCH"
+              --head "$BRANCH" || \
+              echo "PR creation failed. Enable 'Allow GitHub Actions to create and approve pull requests' or use a PAT."
           else
             echo "No changes to commit."
           fi
